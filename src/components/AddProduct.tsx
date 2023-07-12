@@ -33,7 +33,7 @@ const handleSubmit=(event: React.FormEvent)=>{
         return;
       }
     addNewProduct(newProduct);
-    alert("Product Added");
+    
     setNewProduct(product);
     
 

@@ -6,28 +6,63 @@ interface Props {
   products: Product[];
   deleteProduct:(productId:number)=>void
   selectedCategory:string | null;
+  editProduct:(updatedProduct:Product)=>void
 }
+const product={
+  id:-1,
+  title:'',
+  image:'',
+  description:'',
+  price:0,
+  category:'',
 
-const AllProducts: React.FC<Props> = ({ products, deleteProduct,  selectedCategory }) => {
+}
+const AllProducts: React.FC<Props> = ({ products, deleteProduct,  selectedCategory, editProduct }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  // Edit Product states
+  const [editedProduct,setEditedProduct]=useState<Product>(product);
+  const [isEditModalOpen,setIsEditModalOPen]=useState(false);
+// ----------------
   const handleCardClick = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
   const handleDelete = (selectedProductId:number) => {
     setIsModalOpen(false);
     deleteProduct(selectedProductId);
-
+    
   };
   const filteredProducts=selectedCategory
   ?products.filter((product)=>product.category===selectedCategory): products;
+  // edit functionalities
+  const handleModalClose = () => {
+    setIsEditModalOPen(false);
+    setIsModalOpen(false);
+  };
 
+  const handleEdit=(product:Product)=>{
+    setEditedProduct(product);
+    setIsEditModalOPen(true);
+    setIsModalOpen(false);
+  }
+
+  const handleEditInputChange = (event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    setEditedProduct((prevEditedProduct) => ({
+      ...prevEditedProduct,
+      [name]: value
+    }));
+  };
+  
+
+  const handleEditSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log(editedProduct);
+    editProduct(editedProduct); // Assumes editedProduct will always have a value
+    setIsEditModalOPen(false);
+  };
 
   return (
     <>
@@ -73,10 +108,95 @@ const AllProducts: React.FC<Props> = ({ products, deleteProduct,  selectedCatego
                 <button type="button" className="btn btn-danger" onClick={()=>handleDelete(selectedProduct.id)}>
                   Delete
                 </button>
+                
+                <button type="button" className="btn btn-dark" onClick={()=>handleEdit(selectedProduct)}>
+                  Edit
+                </button>
                 <button type="button" className="btn btn-dark" onClick={handleModalClose}>
                   Close
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+{editedProduct && (
+        <div className={`modal${isEditModalOpen ? ' show' : ''}`} tabIndex={-1} role="dialog">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <form onSubmit={handleEditSubmit}>
+              <div className="mb-3">
+    <label htmlFor="title" className="form-label">Title:</label>
+    <input
+      type="text"
+      className="form-control"
+      id="title"
+      name="title"
+      value={editedProduct.title}
+      onChange={handleEditInputChange}
+      required
+    />
+  </div>
+  <div className="mb-3">
+    <label htmlFor="category" className="form-label">Category:</label>
+    <select
+      className="form-control"
+      id="category"
+      name="category"
+      value={editedProduct.category}
+      onChange={handleEditInputChange}
+      required
+    >
+      <option value="">Select a category</option>
+      <option value="men's clothing">Men's clothing</option>
+      <option value="women's clothing">Women's clothing</option>
+      <option value="jewelery">Jewelery</option>
+      <option value="electronics">Electronics</option>
+    </select>
+  </div>
+  <div className="mb-3">
+    <label htmlFor="price" className="form-label">Price:</label>
+    <input
+      type="text"
+      className="form-control"
+      id="price"
+      name="price"
+      value={editedProduct.price}
+      onChange={handleEditInputChange}
+      required
+    />
+  </div>
+  <div className="mb-3">
+    <label htmlFor="image" className="form-label">Image URL:</label>
+    <input
+      type="text"
+      className="form-control"
+      id="image"
+      name="image"
+      value={editedProduct.image}
+      onChange={handleEditInputChange}
+      required
+    />
+  </div>
+  <div className="mb-3">
+  <label htmlFor="description" className="form-label">Description:</label>
+  <textarea
+    className="form-control"
+    id="description"
+    name="description"
+    rows={6}
+    value={editedProduct.description}
+    onChange={handleEditInputChange}
+  ></textarea>
+</div>
+
+      <button type="submit" className="btn btn-primary">Add</button>
+              </form>
+              <button type="button" className="btn btn-dark" onClick={handleModalClose}>
+                  Close
+                </button>
             </div>
           </div>
         </div>
@@ -86,13 +206,3 @@ const AllProducts: React.FC<Props> = ({ products, deleteProduct,  selectedCatego
 };
 
 export default AllProducts;
-
-
-
-
-
-
-
-
-
-

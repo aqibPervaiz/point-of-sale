@@ -7,7 +7,8 @@ import { Product } from './interfaces/interface';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AddProduct from './components/AddProduct';
 
-
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC= ()=> {
   // states to get products, to get products by category, to show search item
@@ -15,7 +16,7 @@ const App: React.FC= ()=> {
   const [categories,setCategories]=useState<string[]>([]);
   const [selectedCategory,setSelectedCategory]=useState<string| null>(null)
   const [searchTerm, setSearchTerm]=useState('');
-  // Facing an issue whenever after searh i try to render home screen the search element never updated so trying to update it every time when i search a route
+// checking toast notification
 
   // fetch data using api
   useEffect(()=>{
@@ -34,6 +35,16 @@ const App: React.FC= ()=> {
     //     })
     //         .then(res=>res.json())
     //         .then(json=>console.log(json))
+    toast.warn('🦄 Product Deleted', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
     setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
 
   }
@@ -41,7 +52,7 @@ const App: React.FC= ()=> {
 
   // ------------To handle category change---------
 const handleCategoryChange=(category:string | null)=>{
-  setSearchTerm('');
+setSearchTerm('');
 setSelectedCategory(category);
   }
 
@@ -56,10 +67,35 @@ setSelectedCategory(category);
 
 // ---------------------------------------adding a new product
 const addNewProduct=(newProduct:Product)=>{
+
+  toast.success('🦄 Product Added Successfully', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    });
   setProducts((prevProducts)=>[...prevProducts,newProduct])
 
 
 }
+
+// handle edit product
+const handleEditProduct = (updatedProduct: Product) => {
+  setProducts((prevProducts) => {
+    // Map over the previous products and replace the matching product with the updated one
+    return prevProducts.map((product) => {
+      if (product.id === updatedProduct.id) {
+        return updatedProduct;
+      }
+      return product;
+    });
+  });
+};
+
   return (
     <>
     <Router>
@@ -69,11 +105,11 @@ const addNewProduct=(newProduct:Product)=>{
           onSearch={handleSearch}
    ></Navbar>
     <Routes>
-      <Route path="/" element={<AllProducts products={filteredProducts} deleteProduct={clickDeleteHandle} selectedCategory={selectedCategory}/> } /> 
+      <Route path="/" element={<AllProducts products={filteredProducts} deleteProduct={clickDeleteHandle} selectedCategory={selectedCategory} editProduct={handleEditProduct} /> } /> 
       <Route path="/addproduct" element={<AddProduct addNewProduct={addNewProduct}/> } /> 
     </Routes>
     </Router>
-     
+     <ToastContainer />
       
        <Footer></Footer>
     </>
