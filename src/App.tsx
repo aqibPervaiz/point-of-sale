@@ -15,6 +15,7 @@ const App: React.FC= ()=> {
   const [categories,setCategories]=useState<string[]>([]);
   const [selectedCategory,setSelectedCategory]=useState<string| null>(null)
   const [searchTerm, setSearchTerm]=useState('');
+  // Facing an issue whenever after searh i try to render home screen the search element never updated so trying to update it every time when i search a route
 
   // fetch data using api
   useEffect(()=>{
@@ -40,6 +41,7 @@ const App: React.FC= ()=> {
 
   // ------------To handle category change---------
 const handleCategoryChange=(category:string | null)=>{
+  setSearchTerm('');
 setSelectedCategory(category);
   }
 
